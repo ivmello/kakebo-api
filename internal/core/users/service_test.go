@@ -22,10 +22,12 @@ func TestCreateUser(t *testing.T) {
 			ID:     1,
 			Status: "created",
 		}
+		ctx := context.Background()
 		repository := new(users.RepositoryMock)
-		repository.On("SaveUser", context.Background(), mock.Anything).Return(1, nil)
+		repository.On("GetUserByEmail", ctx, input.Email).Return(nil, nil)
+		repository.On("SaveUser", ctx, mock.Anything).Return(1, nil)
 		service := users.NewService(repository)
-		output, err := service.CreateUser(context.Background(), input)
+		output, err := service.CreateUser(ctx, input)
 		assert.Nil(t, err)
 		assert.Equal(t, expectedOutput, output)
 	})
