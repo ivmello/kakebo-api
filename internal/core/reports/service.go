@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
-	"github.com/ivmello/kakebo-go-api/internal/core/transactions/entity"
 	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
@@ -31,7 +30,7 @@ func (s *service) Summarize(ctx context.Context, userId int) (SummarizeOutput, e
 	}
 	var total, debits, credits int
 	for _, t := range transactionsList {
-		if t.TransactionType == entity.DEBIT {
+		if t.TransactionType == transactions.DEBIT {
 			debits += t.Amount
 		} else {
 			credits += t.Amount

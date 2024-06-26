@@ -7,13 +7,12 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
-	"github.com/ivmello/kakebo-go-api/internal/core/users/entity"
 )
 
 type Service interface {
 	Login(input LoginInput) (LoginOutput, error)
 	VerifyToken(tokenString string) error
-	GetUserFromToken(tokenString string) (*entity.User, error)
+	GetUserFromToken(tokenString string) (*users.User, error)
 }
 
 type service struct {
@@ -60,7 +59,7 @@ func (s *service) Login(input LoginInput) (LoginOutput, error) {
 	if err != nil {
 		return LoginOutput{}, ErrInvalidUser
 	}
-	checked := entity.CheckPassword(user.Password, input.Password)
+	checked := users.CheckPassword(user.Password, input.Password)
 	if !checked {
 		return LoginOutput{}, ErrInvalidUser
 	}
@@ -73,7 +72,7 @@ func (s *service) Login(input LoginInput) (LoginOutput, error) {
 	}, nil
 }
 
-func (s *service) GetUserFromToken(tokenString string) (*entity.User, error) {
+func (s *service) GetUserFromToken(tokenString string) (*users.User, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(s.JWTSecret), nil
 	})
@@ -97,7 +96,7 @@ func (s *service) GetUserFromToken(tokenString string) (*entity.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	checked := entity.CheckPassword(user.Password, password)
+	checked := users.CheckPassword(user.Password, password)
 	if !checked {
 		return nil, ErrInvalidUser
 	}

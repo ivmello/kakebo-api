@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/ivmello/kakebo-go-api/internal/core/transactions/entity"
 	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
@@ -27,7 +26,7 @@ func NewService(repo Repository) Service {
 
 func (s *service) CreateTransaction(ctx context.Context, input CreateTransactionInput) (CreateTransactionOutput, error) {
 	userId := ctx.Value(utils.USER_ID_KEY).(int)
-	transaction := entity.NewTransaction("", userId, input.Amount, entity.TransactionType(input.TransactionType), input.Description)
+	transaction := NewTransaction("", userId, input.Amount, TransactionType(input.TransactionType), input.Description)
 	transactionId, err := s.repo.SaveTransaction(ctx, transaction)
 	if err != nil {
 		return CreateTransactionOutput{}, err

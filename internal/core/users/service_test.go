@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
-	"github.com/ivmello/kakebo-go-api/internal/core/users/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -40,7 +39,7 @@ func TestUpdateUser(t *testing.T) {
 			Email:    "john2@doe.com",
 			Password: "1234567",
 		}
-		existingUser := &entity.User{
+		existingUser := &users.User{
 			ID:       userId,
 			Name:     "John Doe",
 			Email:    "john2@doe.com",

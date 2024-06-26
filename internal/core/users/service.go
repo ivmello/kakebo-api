@@ -2,8 +2,6 @@ package users
 
 import (
 	"context"
-
-	"github.com/ivmello/kakebo-go-api/internal/core/users/entity"
 )
 
 type Service interface {
@@ -27,7 +25,7 @@ func (s *service) CreateUser(ctx context.Context, input CreateUserInput) (Create
 	if user != nil {
 		return CreateUserOutput{}, ErrUserAlreadyExists
 	}
-	newUser := entity.NewUser(0, input.Name, input.Email, input.Password)
+	newUser := NewUser(0, input.Name, input.Email, input.Password)
 	userId, err := s.repo.SaveUser(ctx, newUser)
 	if err != nil {
 		return CreateUserOutput{}, err
