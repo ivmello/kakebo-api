@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development
+      args:
+        - SERVICE_PATH=webserver
+        - DEBUG_PORT=2345
+    volumes:
+      - .:/app
+    ports:
+      - 9999:9999
+      - 3456:3456
+    depends_on:
+      - database
+
+  database:
+    image: postgres:latest
+    hostname: db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=kakebo
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./scripts/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # - ./scripts/postgresql.conf:/docker-entrypoint-initdb.d/postgresql.conf
+    # command: postgres -c config_file=/docker-entrypoint-initdb.d/postgresql.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 15s
+      timeout: 25s
+
+volumes:
+  db_data:
+
+networks:
+  default:
+    driver: bridge
