@@ -6,13 +6,12 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/ivmello/kakebo-go-api/internal/core/auth/dto"
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
 	"github.com/ivmello/kakebo-go-api/internal/core/users/entity"
 )
 
 type Service interface {
-	Login(input dto.LoginInput) (dto.LoginOutput, error)
+	Login(input LoginInput) (LoginOutput, error)
 	VerifyToken(tokenString string) error
 	GetUserFromToken(tokenString string) (*entity.User, error)
 }
@@ -55,21 +54,21 @@ func (s *service) VerifyToken(tokenString string) error {
 	return nil
 }
 
-func (s *service) Login(input dto.LoginInput) (dto.LoginOutput, error) {
+func (s *service) Login(input LoginInput) (LoginOutput, error) {
 	ctx := context.Background()
 	user, err := s.repo.GetUserByEmail(ctx, input.Email)
 	if err != nil {
-		return dto.LoginOutput{}, ErrInvalidUser
+		return LoginOutput{}, ErrInvalidUser
 	}
 	checked := entity.CheckPassword(user.Password, input.Password)
 	if !checked {
-		return dto.LoginOutput{}, ErrInvalidUser
+		return LoginOutput{}, ErrInvalidUser
 	}
 	token, err := s.createToken(input.Email, input.Password)
 	if err != nil {
-		return dto.LoginOutput{}, err
+		return LoginOutput{}, err
 	}
-	return dto.LoginOutput{
+	return LoginOutput{
 		Token: token,
 	}, nil
 }

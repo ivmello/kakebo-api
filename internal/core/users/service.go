@@ -3,14 +3,13 @@ package users
 import (
 	"context"
 
-	"github.com/ivmello/kakebo-go-api/internal/core/users/dto"
 	"github.com/ivmello/kakebo-go-api/internal/core/users/entity"
 )
 
 type Service interface {
-	CreateUser(ctx context.Context, input dto.CreateUserInput) (dto.CreateUserOutput, error)
-	UpdateUser(ctx context.Context, id int, input dto.UpdateUserInput) (dto.UpdateUserOutput, error)
-	GetUser(ctx context.Context, id int) (dto.UserOutput, error)
+	CreateUser(ctx context.Context, input CreateUserInput) (CreateUserOutput, error)
+	UpdateUser(ctx context.Context, id int, input UpdateUserInput) (UpdateUserOutput, error)
+	GetUser(ctx context.Context, id int) (UserOutput, error)
 }
 
 type service struct {
@@ -23,52 +22,52 @@ func NewService(repo Repository) Service {
 	}
 }
 
-func (s *service) CreateUser(ctx context.Context, input dto.CreateUserInput) (dto.CreateUserOutput, error) {
+func (s *service) CreateUser(ctx context.Context, input CreateUserInput) (CreateUserOutput, error) {
 	user, _ := s.repo.GetUserByEmail(ctx, input.Email)
 	if user != nil {
-		return dto.CreateUserOutput{}, ErrUserAlreadyExists
+		return CreateUserOutput{}, ErrUserAlreadyExists
 	}
 	newUser := entity.NewUser(0, input.Name, input.Email, input.Password)
 	userId, err := s.repo.SaveUser(ctx, newUser)
 	if err != nil {
-		return dto.CreateUserOutput{}, err
+		return CreateUserOutput{}, err
 	}
-	return dto.CreateUserOutput{
+	return CreateUserOutput{
 		ID:     userId,
 		Status: "created",
 	}, nil
 }
 
-func (s *service) UpdateUser(ctx context.Context, id int, input dto.UpdateUserInput) (dto.UpdateUserOutput, error) {
+func (s *service) UpdateUser(ctx context.Context, id int, input UpdateUserInput) (UpdateUserOutput, error) {
 	if id <= 0 {
-		return dto.UpdateUserOutput{}, ErrInvalidUserID
+		return UpdateUserOutput{}, ErrInvalidUserID
 	}
 	user, err := s.repo.GetUserByID(ctx, id)
 	if err != nil {
-		return dto.UpdateUserOutput{}, err
+		return UpdateUserOutput{}, err
 	}
 	user.Name = input.Name
 	user.Email = input.Email
 	user.UpdatePassword(input.Password)
 	err = s.repo.UpdateUser(ctx, user)
 	if err != nil {
-		return dto.UpdateUserOutput{}, err
+		return UpdateUserOutput{}, err
 	}
-	return dto.UpdateUserOutput{
+	return UpdateUserOutput{
 		ID:     user.ID,
 		Status: "updated",
 	}, nil
 }
 
-func (s *service) GetUser(ctx context.Context, id int) (dto.UserOutput, error) {
+func (s *service) GetUser(ctx context.Context, id int) (UserOutput, error) {
 	if id <= 0 {
-		return dto.UserOutput{}, ErrInvalidUserID
+		return UserOutput{}, ErrInvalidUserID
 	}
 	user, err := s.repo.GetUserByID(ctx, id)
 	if err != nil {
-		return dto.UserOutput{}, err
+		return UserOutput{}, err
 	}
-	return dto.UserOutput{
+	return UserOutput{
 		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,

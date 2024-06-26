@@ -1,4 +1,4 @@
-package dto
+package transactions
 
 type CreateTransactionInput struct {
 	UserID          int    `json:"user_id"`
@@ -19,8 +19,4 @@ type TransactionOutput struct {
 	TransactionType string `json:"transaction_type"`
 	Description     string `json:"description"`
 	CreatedAt       string `json:"created_at"`
-}
-
-type GetAllUserTransactionsOutput struct {
-	Transactions []TransactionOutput `json:"transactions"`
 }

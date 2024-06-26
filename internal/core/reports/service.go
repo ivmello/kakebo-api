@@ -4,14 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ivmello/kakebo-go-api/internal/core/reports/dto"
 	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
 	"github.com/ivmello/kakebo-go-api/internal/core/transactions/entity"
 	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
 type Service interface {
-	Summarize(ctx context.Context, userId int) (dto.SummarizeOutput, error)
+	Summarize(ctx context.Context, userId int) (SummarizeOutput, error)
 }
 
 type service struct {
@@ -24,11 +23,11 @@ func NewService(repo transactions.Repository) Service {
 	}
 }
 
-func (s *service) Summarize(ctx context.Context, userId int) (dto.SummarizeOutput, error) {
+func (s *service) Summarize(ctx context.Context, userId int) (SummarizeOutput, error) {
 	transactionsList, err := s.repo.GetAllUserTransactions(ctx, userId)
 	fmt.Println(transactionsList, userId)
 	if err != nil {
-		return dto.SummarizeOutput{}, err
+		return SummarizeOutput{}, err
 	}
 	var total, debits, credits int
 	for _, t := range transactionsList {
@@ -39,7 +38,7 @@ func (s *service) Summarize(ctx context.Context, userId int) (dto.SummarizeOutpu
 		}
 	}
 	total = credits - debits
-	return dto.SummarizeOutput{
+	return SummarizeOutput{
 		Total:           total,
 		TotalFormated:   utils.FormatMoney(total, ".", ","),
 		Debits:          debits,

@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/ivmello/kakebo-go-api/internal/core/users/dto"
 	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
@@ -21,7 +20,7 @@ func NewHandler(service Service) *handler {
 }
 
 func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateUserInput
+	var input CreateUserInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
@@ -48,7 +47,7 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		utils.JSONErrorResponse(w, "invalid user id", http.StatusBadRequest)
 		return
 	}
-	var input dto.UpdateUserInput
+	var input UpdateUserInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

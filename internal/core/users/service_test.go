@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
-	"github.com/ivmello/kakebo-go-api/internal/core/users/dto"
 	"github.com/ivmello/kakebo-go-api/internal/core/users/entity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -13,12 +12,12 @@ import (
 
 func TestCreateUser(t *testing.T) {
 	t.Run("Should create a user", func(t *testing.T) {
-		input := dto.CreateUserInput{
+		input := users.CreateUserInput{
 			Name:     "John Doe",
 			Email:    "john@doe.com",
 			Password: "123456",
 		}
-		expectedOutput := dto.CreateUserOutput{
+		expectedOutput := users.CreateUserOutput{
 			ID:     1,
 			Status: "created",
 		}
@@ -36,7 +35,7 @@ func TestCreateUser(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	t.Run("Should update a user", func(t *testing.T) {
 		userId := 2
-		input := dto.UpdateUserInput{
+		input := users.UpdateUserInput{
 			Name:     "John Doe 2",
 			Email:    "john2@doe.com",
 			Password: "1234567",
@@ -47,7 +46,7 @@ func TestUpdateUser(t *testing.T) {
 			Email:    "john2@doe.com",
 			Password: "1234567",
 		}
-		expectedOutput := dto.UpdateUserOutput{
+		expectedOutput := users.UpdateUserOutput{
 			ID:     2,
 			Status: "updated",
 		}

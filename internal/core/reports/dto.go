@@ -1,4 +1,4 @@
-package dto
+package reports
 
 type SummarizeOutput struct {
 	Total           int    `json:"total"`
