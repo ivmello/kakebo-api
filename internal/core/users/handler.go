@@ -24,18 +24,18 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var input dto.CreateUserInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = json.Unmarshal(body, &input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	ctx := context.Background()
 	output, err := h.service.CreateUser(ctx, input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)
@@ -45,23 +45,24 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userId := ctx.Value(utils.USER_ID_KEY)
 	if userId == nil {
-		http.Error(w, "invalid user id", http.StatusBadRequest)
+		utils.JSONErrorResponse(w, "invalid user id", http.StatusBadRequest)
 		return
 	}
 	var input dto.UpdateUserInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = json.Unmarshal(body, &input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	output, err := h.service.UpdateUser(ctx, userId.(int), input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)
@@ -71,12 +72,12 @@ func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userId := ctx.Value(utils.USER_ID_KEY)
 	if userId == nil {
-		http.Error(w, "invalid user id", http.StatusBadRequest)
+		utils.JSONErrorResponse(w, "invalid user id", http.StatusBadRequest)
 		return
 	}
 	output, err := h.service.GetUser(ctx, userId.(int))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)

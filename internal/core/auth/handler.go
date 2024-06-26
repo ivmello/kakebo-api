@@ -23,7 +23,7 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&input)
 	output, err := h.service.Login(input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)

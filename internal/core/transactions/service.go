@@ -11,7 +11,7 @@ import (
 
 type Service interface {
 	CreateTransaction(ctx context.Context, input dto.CreateTransactionInput) (dto.CreateTransactionOutput, error)
-	GetAllUserTransactions(ctx context.Context, userId int) (dto.GetAllUserTransactionsOutput, error)
+	GetAllUserTransactions(ctx context.Context, userId int) ([]dto.TransactionOutput, error)
 	GetTransaction(ctx context.Context, userId int, transactionId string) (dto.TransactionOutput, error)
 	DeleteTransaction(ctx context.Context, userId int, transactionId string) error
 }
@@ -39,16 +39,14 @@ func (s *service) CreateTransaction(ctx context.Context, input dto.CreateTransac
 	}, nil
 }
 
-func (s *service) GetAllUserTransactions(ctx context.Context, userId int) (dto.GetAllUserTransactionsOutput, error) {
+func (s *service) GetAllUserTransactions(ctx context.Context, userId int) ([]dto.TransactionOutput, error) {
 	transactions, err := s.repo.GetAllUserTransactions(ctx, userId)
 	if err != nil {
-		return dto.GetAllUserTransactionsOutput{}, err
+		return nil, err
 	}
-	output := dto.GetAllUserTransactionsOutput{
-		Transactions: make([]dto.TransactionOutput, 0),
-	}
+	output := make([]dto.TransactionOutput, 0)
 	for _, transaction := range transactions {
-		output.Transactions = append(output.Transactions, dto.TransactionOutput{
+		output = append(output, dto.TransactionOutput{
 			ID:              transaction.ID,
 			UserID:          transaction.UserID,
 			Amount:          transaction.Amount,

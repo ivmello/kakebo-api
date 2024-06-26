@@ -24,17 +24,17 @@ func (h *handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	var input dto.CreateTransactionInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	err = json.Unmarshal(body, &input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	output, err := h.service.CreateTransaction(ctx, input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)
@@ -45,7 +45,7 @@ func (h *handler) ListAllUserTransactions(w http.ResponseWriter, r *http.Request
 	userId := ctx.Value(utils.USER_ID_KEY).(int)
 	output, err := h.service.GetAllUserTransactions(ctx, userId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)
@@ -57,7 +57,7 @@ func (h *handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	transactionId := r.PathValue("id")
 	output, err := h.service.GetTransaction(ctx, userId, transactionId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)
@@ -69,7 +69,7 @@ func (h *handler) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
 	transactionId := r.PathValue("id")
 	err := h.service.DeleteTransaction(ctx, userId, transactionId)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, nil, http.StatusNoContent)
