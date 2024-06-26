@@ -1,9 +1,10 @@
 package dto
 
 type CreateTransactionInput struct {
-	UserID      int    `json:"user_id"`
-	Amount      int    `json:"amount"`
-	Description string `json:"description"`
+	UserID          int    `json:"user_id"`
+	Amount          int    `json:"amount"`
+	TransactionType string `json:"transaction_type"`
+	Description     string `json:"description"`
 }
 
 type CreateTransactionOutput struct {
@@ -12,11 +13,12 @@ type CreateTransactionOutput struct {
 }
 
 type TransactionOutput struct {
-	ID          string `json:"id"`
-	UserID      int    `json:"user_id"`
-	Amount      int    `json:"amount"`
-	Description string `json:"description"`
-	CreatedAt   string `json:"created_at"`
+	ID              string `json:"id"`
+	UserID          int    `json:"user_id"`
+	Amount          int    `json:"amount"`
+	TransactionType string `json:"transaction_type"`
+	Description     string `json:"description"`
+	CreatedAt       string `json:"created_at"`
 }
 
 type GetAllUserTransactionsOutput struct {

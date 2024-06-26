@@ -11,8 +11,9 @@ import (
 
 type Service interface {
 	CreateTransaction(ctx context.Context, input dto.CreateTransactionInput) (dto.CreateTransactionOutput, error)
-	GetAllUserTransactions(ctx context.Context) (dto.GetAllUserTransactionsOutput, error)
-	GetTransaction(ctx context.Context, transactionId string) (dto.TransactionOutput, error)
+	GetAllUserTransactions(ctx context.Context, userId int) (dto.GetAllUserTransactionsOutput, error)
+	GetTransaction(ctx context.Context, userId int, transactionId string) (dto.TransactionOutput, error)
+	DeleteTransaction(ctx context.Context, userId int, transactionId string) error
 }
 
 type service struct {
@@ -27,7 +28,7 @@ func NewService(repo Repository) Service {
 
 func (s *service) CreateTransaction(ctx context.Context, input dto.CreateTransactionInput) (dto.CreateTransactionOutput, error) {
 	userId := ctx.Value(utils.USER_ID_KEY).(int)
-	transaction := entity.NewTransaction("", userId, input.Amount, input.Description)
+	transaction := entity.NewTransaction("", userId, input.Amount, entity.TransactionType(input.TransactionType), input.Description)
 	transactionId, err := s.repo.SaveTransaction(ctx, transaction)
 	if err != nil {
 		return dto.CreateTransactionOutput{}, err
@@ -38,8 +39,7 @@ func (s *service) CreateTransaction(ctx context.Context, input dto.CreateTransac
 	}, nil
 }
 
-func (s *service) GetAllUserTransactions(ctx context.Context) (dto.GetAllUserTransactionsOutput, error) {
-	userId := ctx.Value(utils.USER_ID_KEY).(int)
+func (s *service) GetAllUserTransactions(ctx context.Context, userId int) (dto.GetAllUserTransactionsOutput, error) {
 	transactions, err := s.repo.GetAllUserTransactions(ctx, userId)
 	if err != nil {
 		return dto.GetAllUserTransactionsOutput{}, err
@@ -49,28 +49,37 @@ func (s *service) GetAllUserTransactions(ctx context.Context) (dto.GetAllUserTra
 	}
 	for _, transaction := range transactions {
 		output.Transactions = append(output.Transactions, dto.TransactionOutput{
-			ID:          transaction.ID,
-			UserID:      transaction.UserID,
-			Amount:      transaction.Amount,
-			Description: transaction.Description,
-			CreatedAt:   transaction.CreatedAt.Local().Format(time.RFC3339),
+			ID:              transaction.ID,
+			UserID:          transaction.UserID,
+			Amount:          transaction.Amount,
+			TransactionType: string(transaction.TransactionType),
+			Description:     transaction.Description,
+			CreatedAt:       transaction.CreatedAt.Local().Format(time.RFC3339),
 		})
 	}
 	return output, nil
 }
 
-func (s *service) GetTransaction(ctx context.Context, transactionId string) (dto.TransactionOutput, error) {
-	userId := ctx.Value(utils.USER_ID_KEY).(int)
+func (s *service) GetTransaction(ctx context.Context, userId int, transactionId string) (dto.TransactionOutput, error) {
 	transaction, _ := s.repo.GetTransactionById(ctx, userId, transactionId)
 	if transaction == nil {
 		return dto.TransactionOutput{}, ErrTransactionNotFound
 	}
 	output := dto.TransactionOutput{
-		ID:          transaction.ID,
-		UserID:      transaction.UserID,
-		Amount:      transaction.Amount,
-		Description: transaction.Description,
-		CreatedAt:   transaction.CreatedAt.Local().Format(time.RFC3339),
+		ID:              transaction.ID,
+		UserID:          transaction.UserID,
+		Amount:          transaction.Amount,
+		TransactionType: string(transaction.TransactionType),
+		Description:     transaction.Description,
+		CreatedAt:       transaction.CreatedAt.Local().Format(time.RFC3339),
 	}
 	return output, nil
+}
+
+func (s *service) DeleteTransaction(ctx context.Context, userId int, transactionId string) error {
+	transaction, _ := s.repo.GetTransactionById(ctx, userId, transactionId)
+	if transaction == nil {
+		return ErrTransactionNotFound
+	}
+	return s.repo.DeleteTransaction(ctx, transaction.ID)
 }

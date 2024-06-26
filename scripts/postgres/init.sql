@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   id UUID PRIMARY KEY,
   user_id INTEGER NOT NULL,
   description VARCHAR(255) NOT NULL,
+  transaction_type VARCHAR(20) NOT NULL,
   amount BIGINT NOT NULL DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id)

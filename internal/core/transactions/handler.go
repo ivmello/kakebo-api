@@ -42,7 +42,8 @@ func (h *handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) ListAllUserTransactions(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	output, err := h.service.GetAllUserTransactions(ctx)
+	userId := ctx.Value(utils.USER_ID_KEY).(int)
+	output, err := h.service.GetAllUserTransactions(ctx, userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -52,11 +53,24 @@ func (h *handler) ListAllUserTransactions(w http.ResponseWriter, r *http.Request
 
 func (h *handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	userId := ctx.Value(utils.USER_ID_KEY).(int)
 	transactionId := r.PathValue("id")
-	output, err := h.service.GetTransaction(ctx, transactionId)
+	output, err := h.service.GetTransaction(ctx, userId, transactionId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	utils.JSONResponse(w, output, http.StatusOK)
+}
+
+func (h *handler) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userId := ctx.Value(utils.USER_ID_KEY).(int)
+	transactionId := r.PathValue("id")
+	err := h.service.DeleteTransaction(ctx, userId, transactionId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	utils.JSONResponse(w, nil, http.StatusNoContent)
 }

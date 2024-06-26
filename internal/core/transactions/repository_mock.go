@@ -24,3 +24,17 @@ func (m *RepositoryMock) GetAllUserTransactions(ctx context.Context, userId int)
 	}
 	return transaction.([]*entity.Transaction), args.Error(1)
 }
+
+func (m *RepositoryMock) GetTransactionById(ctx context.Context, userId int, transactionId string) (*entity.Transaction, error) {
+	args := m.Called(ctx, userId, transactionId)
+	transaction := args.Get(0)
+	if transaction == nil {
+		return nil, args.Error(1)
+	}
+	return transaction.(*entity.Transaction), args.Error(1)
+}
+
+func (m *RepositoryMock) DeleteTransaction(ctx context.Context, id int) error {
+	args := m.Called(ctx, id)
+	return args.Error(0)
+}

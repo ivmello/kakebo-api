@@ -4,6 +4,7 @@ import (
 	"github.com/ivmello/kakebo-go-api/internal/adapters/database"
 	"github.com/ivmello/kakebo-go-api/internal/config"
 	"github.com/ivmello/kakebo-go-api/internal/core/auth"
+	"github.com/ivmello/kakebo-go-api/internal/core/reports"
 	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
 )
@@ -42,4 +43,8 @@ func (p *Provider) GetTransactionService() transactions.Service {
 
 func (p *Provider) GetAuthService() auth.Service {
 	return auth.NewService(p.cfg.JWTSecret, p.GetUserRepository())
+}
+
+func (p *Provider) GetReportService() reports.Service {
+	return reports.NewService(p.GetTransactionRepository())
 }
