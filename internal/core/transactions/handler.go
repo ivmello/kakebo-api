@@ -20,6 +20,7 @@ func NewHandler(service Service) *handler {
 
 func (h *handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	userId := ctx.Value(utils.USER_ID_KEY).(int)
 	var input CreateTransactionInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -31,7 +32,7 @@ func (h *handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	output, err := h.service.CreateTransaction(ctx, input)
+	output, err := h.service.CreateTransaction(ctx, userId, input)
 	if err != nil {
 		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return

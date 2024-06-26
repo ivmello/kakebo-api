@@ -3,12 +3,10 @@ package transactions
 import (
 	"context"
 	"time"
-
-	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
 type Service interface {
-	CreateTransaction(ctx context.Context, input CreateTransactionInput) (CreateTransactionOutput, error)
+	CreateTransaction(ctx context.Context, userId int, input CreateTransactionInput) (CreateTransactionOutput, error)
 	GetAllUserTransactions(ctx context.Context, userId int) ([]TransactionOutput, error)
 	GetTransaction(ctx context.Context, userId int, transactionId string) (TransactionOutput, error)
 	DeleteTransaction(ctx context.Context, userId int, transactionId string) error
@@ -24,8 +22,7 @@ func NewService(repo Repository) Service {
 	}
 }
 
-func (s *service) CreateTransaction(ctx context.Context, input CreateTransactionInput) (CreateTransactionOutput, error) {
-	userId := ctx.Value(utils.USER_ID_KEY).(int)
+func (s *service) CreateTransaction(ctx context.Context, userId int, input CreateTransactionInput) (CreateTransactionOutput, error) {
 	transaction := NewTransaction("", userId, input.Amount, TransactionType(input.TransactionType), input.Description)
 	transactionId, err := s.repo.SaveTransaction(ctx, transaction)
 	if err != nil {
