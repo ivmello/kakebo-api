@@ -2,6 +2,8 @@ package transactions
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/ivmello/kakebo-go-api/internal/adapters/database"
 )
@@ -9,6 +11,7 @@ import (
 type Repository interface {
 	SaveTransaction(ctx context.Context, transaction *Transaction) (string, error)
 	GetAllUserTransactions(ctx context.Context, userId int) ([]*Transaction, error)
+	GetAllUserTransactionsByFilter(ctx context.Context, userId int, input TransactionFilter) ([]*Transaction, error)
 	GetTransactionById(ctx context.Context, userId int, transactionId string) (*Transaction, error)
 	DeleteTransaction(ctx context.Context, transactionId string) error
 }
@@ -43,6 +46,40 @@ func (r *repo) DeleteTransaction(ctx context.Context, transactionId string) erro
 
 func (r *repo) GetAllUserTransactions(ctx context.Context, userId int) ([]*Transaction, error) {
 	rows, err := r.conn.Query(ctx, "SELECT id, user_id, amount, transaction_type, description, created_at FROM transactions WHERE user_id = $1 ORDER BY created_at DESC", userId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	transactions := make([]*Transaction, 0)
+	for rows.Next() {
+		transaction := &Transaction{}
+		err := rows.Scan(&transaction.ID, &transaction.UserID, &transaction.Amount, &transaction.TransactionType, &transaction.Description, &transaction.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		transactions = append(transactions, transaction)
+	}
+	return transactions, nil
+}
+
+func (r *repo) GetAllUserTransactionsByFilter(ctx context.Context, userId int, input TransactionFilter) ([]*Transaction, error) {
+	stmt := `SELECT id, user_id, amount, transaction_type, description, created_at FROM transactions WHERE user_id = $1`
+	if input.StartDate != "" {
+		stmt += ` AND created_at >= '` + input.StartDate + `'`
+	}
+	if input.EndDate != "" {
+		stmt += ` AND created_at <= '` + input.EndDate + `'`
+	}
+	if input.Month != 0 {
+		stmt += ` AND EXTRACT(MONTH FROM created_at) = ` + fmt.Sprintf("%d", input.Month)
+	}
+	if input.YEAR != 0 {
+		stmt += ` AND EXTRACT(YEAR FROM created_at) = ` + fmt.Sprintf("%d", input.YEAR)
+	} else {
+		stmt += ` AND EXTRACT(YEAR FROM created_at) = ` + fmt.Sprintf("%d", time.Now().Year())
+	}
+	fmt.Println(stmt)
+	rows, err := r.conn.Query(ctx, stmt, userId)
 	if err != nil {
 		return nil, err
 	}

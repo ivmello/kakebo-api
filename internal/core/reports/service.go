@@ -2,14 +2,13 @@ package reports
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
 	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
 type Service interface {
-	Summarize(ctx context.Context, userId int) (SummarizeOutput, error)
+	Summarize(ctx context.Context, userId int, input transactions.TransactionFilter) (SummarizeOutput, error)
 }
 
 type service struct {
@@ -22,9 +21,8 @@ func NewService(repo transactions.Repository) Service {
 	}
 }
 
-func (s *service) Summarize(ctx context.Context, userId int) (SummarizeOutput, error) {
-	transactionsList, err := s.repo.GetAllUserTransactions(ctx, userId)
-	fmt.Println(transactionsList, userId)
+func (s *service) Summarize(ctx context.Context, userId int, input transactions.TransactionFilter) (SummarizeOutput, error) {
+	transactionsList, err := s.repo.GetAllUserTransactionsByFilter(ctx, userId, input)
 	if err != nil {
 		return SummarizeOutput{}, err
 	}

@@ -37,3 +37,12 @@ func (m *RepositoryMock) DeleteTransaction(ctx context.Context, id int) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
+
+func (m *RepositoryMock) GetAllUserTransactionsByFilter(ctx context.Context, userId int, input TransactionFilter) ([]*Transaction, error) {
+	args := m.Called(ctx, userId, input)
+	transaction := args.Get(0)
+	if transaction == nil {
+		return nil, args.Error(1)
+	}
+	return transaction.([]*Transaction), args.Error(1)
+}

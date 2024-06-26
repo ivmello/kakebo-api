@@ -1,8 +1,11 @@
 package reports
 
 import (
+	"encoding/json"
+	"io"
 	"net/http"
 
+	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
 	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
@@ -18,8 +21,19 @@ func NewHandler(service Service) *handler {
 
 func (h *handler) Summarize(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	var input transactions.TransactionFilter
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = json.Unmarshal(body, &input)
+	if err != nil {
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	userId := ctx.Value(utils.USER_ID_KEY).(int)
-	output, err := h.service.Summarize(ctx, userId)
+	output, err := h.service.Summarize(ctx, userId, input)
 	if err != nil {
 		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return

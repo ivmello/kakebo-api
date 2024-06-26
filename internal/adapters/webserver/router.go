@@ -96,7 +96,7 @@ func (w *webserver) registerRoutes(mux *http.ServeMux) *router {
 		r.Get("/transactions/{id}", transactionHandler.GetTransaction)
 		r.Delete("/transactions/{id}", transactionHandler.DeleteTransaction)
 		r.Post("/transactions", transactionHandler.CreateTransaction)
-		r.Get("/reports/summarize", reportHandler.Summarize)
+		r.Post("/reports/summarize", reportHandler.Summarize)
 	})
 
 	return routes
