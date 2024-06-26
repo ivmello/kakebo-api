@@ -43,7 +43,11 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userId := ctx.Value(utils.USER_ID_KEY).(int)
+	userId := ctx.Value(utils.USER_ID_KEY)
+	if userId == nil {
+		http.Error(w, "invalid user id", http.StatusBadRequest)
+		return
+	}
 	var input dto.UpdateUserInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -55,7 +59,22 @@ func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	output, err := h.service.UpdateUser(ctx, userId, input)
+	output, err := h.service.UpdateUser(ctx, userId.(int), input)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	utils.JSONResponse(w, output, http.StatusOK)
+}
+
+func (h *handler) GetUser(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userId := ctx.Value(utils.USER_ID_KEY)
+	if userId == nil {
+		http.Error(w, "invalid user id", http.StatusBadRequest)
+		return
+	}
+	output, err := h.service.GetUser(ctx, userId.(int))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

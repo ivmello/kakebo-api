@@ -21,3 +21,9 @@ type UpdateUserOutput struct {
 	ID     int    `json:"id"`
 	Status string `json:"status"`
 }
+
+type UserOutput struct {
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}

@@ -78,8 +78,8 @@ func (w *webserver) registerRoutes(mux *http.ServeMux) *router {
 
 	// non authenticated routes
 	routes.Group(func(r *router) {
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("Hello, world!"))
+		r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("ok"))
 		})
 		r.Post("/users", userHandler.CreateUser)
 		r.Post("/auth/login", authHandler.Login)
@@ -89,6 +89,7 @@ func (w *webserver) registerRoutes(mux *http.ServeMux) *router {
 	routes.Group(func(r *router) {
 		r.Use(authMiddleware.Execute)
 		r.Put("/users", userHandler.UpdateUser)
+		r.Get("/user", userHandler.GetUser)
 		r.Get("/transactions", transactionHandler.ListAllUserTransactions)
 		r.Get("/transactions/{id}", transactionHandler.GetTransaction)
 		r.Post("/transactions", transactionHandler.CreateTransaction)

@@ -10,6 +10,7 @@ import (
 type Service interface {
 	CreateUser(ctx context.Context, input dto.CreateUserInput) (dto.CreateUserOutput, error)
 	UpdateUser(ctx context.Context, id int, input dto.UpdateUserInput) (dto.UpdateUserOutput, error)
+	GetUser(ctx context.Context, id int) (dto.UserOutput, error)
 }
 
 type service struct {
@@ -56,5 +57,20 @@ func (s *service) UpdateUser(ctx context.Context, id int, input dto.UpdateUserIn
 	return dto.UpdateUserOutput{
 		ID:     user.ID,
 		Status: "updated",
+	}, nil
+}
+
+func (s *service) GetUser(ctx context.Context, id int) (dto.UserOutput, error) {
+	if id <= 0 {
+		return dto.UserOutput{}, ErrInvalidUserID
+	}
+	user, err := s.repo.GetUserByID(ctx, id)
+	if err != nil {
+		return dto.UserOutput{}, err
+	}
+	return dto.UserOutput{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
 	}, nil
 }
