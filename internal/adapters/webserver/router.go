@@ -90,6 +90,7 @@ func (w *webserver) registerRoutes(mux *http.ServeMux) *router {
 		r.Use(authMiddleware.Execute)
 		r.Put("/users", userHandler.UpdateUser)
 		r.Get("/transactions", transactionHandler.ListAllUserTransactions)
+		r.Get("/transactions/{id}", transactionHandler.GetTransaction)
 		r.Post("/transactions", transactionHandler.CreateTransaction)
 	})
 

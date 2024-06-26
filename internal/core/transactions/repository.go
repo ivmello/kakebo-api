@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	SaveTransaction(ctx context.Context, transaction *entity.Transaction) (string, error)
 	GetAllUserTransactions(ctx context.Context, userId int) ([]*entity.Transaction, error)
+	GetTransactionById(ctx context.Context, userId int, transactionId string) (*entity.Transaction, error)
 }
 
 type repo struct {
@@ -48,4 +49,14 @@ func (r *repo) GetAllUserTransactions(ctx context.Context, userId int) ([]*entit
 		transactions = append(transactions, transaction)
 	}
 	return transactions, nil
+}
+
+func (r *repo) GetTransactionById(ctx context.Context, userId int, transactionId string) (*entity.Transaction, error) {
+	transaction := &entity.Transaction{}
+	err := r.conn.QueryRow(ctx, "SELECT id, user_id, amount, description, created_at FROM transactions WHERE user_id = $1 and id = $2", userId, transactionId).
+		Scan(&transaction.ID, &transaction.UserID, &transaction.Amount, &transaction.Description, &transaction.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return transaction, nil
 }

@@ -49,3 +49,14 @@ func (h *handler) ListAllUserTransactions(w http.ResponseWriter, r *http.Request
 	}
 	utils.JSONResponse(w, output, http.StatusOK)
 }
+
+func (h *handler) GetTransaction(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	transactionId := r.PathValue("id")
+	output, err := h.service.GetTransaction(ctx, transactionId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	utils.JSONResponse(w, output, http.StatusOK)
+}

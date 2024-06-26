@@ -12,6 +12,7 @@ import (
 type Service interface {
 	CreateTransaction(ctx context.Context, input dto.CreateTransactionInput) (dto.CreateTransactionOutput, error)
 	GetAllUserTransactions(ctx context.Context) (dto.GetAllUserTransactionsOutput, error)
+	GetTransaction(ctx context.Context, transactionId string) (dto.TransactionOutput, error)
 }
 
 type service struct {
@@ -54,6 +55,22 @@ func (s *service) GetAllUserTransactions(ctx context.Context) (dto.GetAllUserTra
 			Description: transaction.Description,
 			CreatedAt:   transaction.CreatedAt.Local().Format(time.RFC3339),
 		})
+	}
+	return output, nil
+}
+
+func (s *service) GetTransaction(ctx context.Context, transactionId string) (dto.TransactionOutput, error) {
+	userId := ctx.Value(utils.USER_ID_KEY).(int)
+	transaction, _ := s.repo.GetTransactionById(ctx, userId, transactionId)
+	if transaction == nil {
+		return dto.TransactionOutput{}, ErrTransactionNotFound
+	}
+	output := dto.TransactionOutput{
+		ID:          transaction.ID,
+		UserID:      transaction.UserID,
+		Amount:      transaction.Amount,
+		Description: transaction.Description,
+		CreatedAt:   transaction.CreatedAt.Local().Format(time.RFC3339),
 	}
 	return output, nil
 }
