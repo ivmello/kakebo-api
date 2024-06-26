@@ -1,12 +1,11 @@
-package users
+package transactions
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"net/http"
 
-	"github.com/ivmello/kakebo-go-api/internal/core/users/dto"
+	"github.com/ivmello/kakebo-go-api/internal/core/transactions/dto"
 	"github.com/ivmello/kakebo-go-api/internal/utils"
 )
 
@@ -20,8 +19,9 @@ func NewHandler(service Service) *handler {
 	}
 }
 
-func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var input dto.CreateUserInput
+func (h *handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var input dto.CreateTransactionInput
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -32,8 +32,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	ctx := context.Background()
-	output, err := h.service.CreateUser(ctx, input)
+	output, err := h.service.CreateTransaction(ctx, input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -41,21 +40,9 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	utils.JSONResponse(w, output, http.StatusOK)
 }
 
-func (h *handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (h *handler) ListAllUserTransactions(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userId := ctx.Value(utils.USER_ID_KEY).(int)
-	var input dto.UpdateUserInput
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	err = json.Unmarshal(body, &input)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	output, err := h.service.UpdateUser(ctx, userId, input)
+	output, err := h.service.GetAllUserTransactions(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -71,7 +70,6 @@ func (d *DB) Connect() Connection {
 
 	connection, err := connPool.Acquire(context.Background())
 	if err != nil {
-		fmt.Println(err)
 		log.Fatal("Error while acquiring connection from the database pool")
 	}
 	defer connection.Release()

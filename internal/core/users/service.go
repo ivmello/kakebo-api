@@ -2,7 +2,6 @@ package users
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/ivmello/kakebo-go-api/internal/core/users/dto"
 	"github.com/ivmello/kakebo-go-api/internal/core/users/entity"
@@ -24,13 +23,12 @@ func NewService(repo Repository) Service {
 }
 
 func (s *service) CreateUser(ctx context.Context, input dto.CreateUserInput) (dto.CreateUserOutput, error) {
-	user := entity.NewUser(0, input.Name, input.Email, input.Password)
-	_, err := s.repo.GetUserByEmail(ctx, user.Email)
-	if err != nil {
+	user, _ := s.repo.GetUserByEmail(ctx, input.Email)
+	if user != nil {
 		return dto.CreateUserOutput{}, ErrUserAlreadyExists
 	}
-	fmt.Println("Creating user")
-	userId, err := s.repo.SaveUser(ctx, user)
+	newUser := entity.NewUser(0, input.Name, input.Email, input.Password)
+	userId, err := s.repo.SaveUser(ctx, newUser)
 	if err != nil {
 		return dto.CreateUserOutput{}, err
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/ivmello/kakebo-go-api/internal/adapters/webserver/middlewares"
 	"github.com/ivmello/kakebo-go-api/internal/core/auth"
+	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
 )
 
@@ -65,8 +66,9 @@ func (r *router) wrap(handler http.HandlerFunc, mx []middleware) (out http.Handl
 }
 
 func (w *webserver) registerRoutes(mux *http.ServeMux) *router {
-	userHandler := users.NewHandler(w.provider.GetUserService())
 	authHandler := auth.NewHandler(w.provider.GetAuthService())
+	userHandler := users.NewHandler(w.provider.GetUserService())
+	transactionHandler := transactions.NewHandler(w.provider.GetTransactionService())
 
 	loggerMiddleware := middlewares.NewLoggerMiddleware()
 	authMiddleware := middlewares.NewAuthMiddleware(w.provider)
@@ -87,6 +89,8 @@ func (w *webserver) registerRoutes(mux *http.ServeMux) *router {
 	routes.Group(func(r *router) {
 		r.Use(authMiddleware.Execute)
 		r.Put("/users", userHandler.UpdateUser)
+		r.Get("/transactions", transactionHandler.ListAllUserTransactions)
+		r.Post("/transactions", transactionHandler.CreateTransaction)
 	})
 
 	return routes

@@ -4,6 +4,7 @@ import (
 	"github.com/ivmello/kakebo-go-api/internal/adapters/database"
 	"github.com/ivmello/kakebo-go-api/internal/config"
 	"github.com/ivmello/kakebo-go-api/internal/core/auth"
+	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
 )
 
@@ -29,6 +30,14 @@ func (p *Provider) GetUserRepository() users.Repository {
 
 func (p *Provider) GetUserService() users.Service {
 	return users.NewService(p.GetUserRepository())
+}
+
+func (p *Provider) GetTransactionRepository() transactions.Repository {
+	return transactions.NewRepository(p.conn)
+}
+
+func (p *Provider) GetTransactionService() transactions.Service {
+	return transactions.NewService(p.GetTransactionRepository())
 }
 
 func (p *Provider) GetAuthService() auth.Service {
