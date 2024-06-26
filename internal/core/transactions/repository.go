@@ -73,12 +73,11 @@ func (r *repo) GetAllUserTransactionsByFilter(ctx context.Context, userId int, i
 	if input.Month != 0 {
 		stmt += ` AND EXTRACT(MONTH FROM created_at) = ` + fmt.Sprintf("%d", input.Month)
 	}
-	if input.YEAR != 0 {
-		stmt += ` AND EXTRACT(YEAR FROM created_at) = ` + fmt.Sprintf("%d", input.YEAR)
+	if input.Year != 0 {
+		stmt += ` AND EXTRACT(YEAR FROM created_at) = ` + fmt.Sprintf("%d", input.Year)
 	} else {
 		stmt += ` AND EXTRACT(YEAR FROM created_at) = ` + fmt.Sprintf("%d", time.Now().Year())
 	}
-	fmt.Println(stmt)
 	rows, err := r.conn.Query(ctx, stmt, userId)
 	if err != nil {
 		return nil, err
