@@ -3,7 +3,7 @@ package users
 import (
 	"context"
 
-	"github.com/ivmello/kakebo-go-api/internal/adapters/database"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Repository interface {
@@ -17,10 +17,10 @@ type Repository interface {
 }
 
 type repo struct {
-	conn database.Connection
+	conn *pgxpool.Pool
 }
 
-func NewRepository(conn database.Connection) Repository {
+func NewRepository(conn *pgxpool.Pool) Repository {
 	return &repo{
 		conn,
 	}

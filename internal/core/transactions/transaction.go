@@ -21,12 +21,12 @@ type TransactionFilter struct {
 }
 
 type Transaction struct {
-	ID     string
-	UserID int
-	Amount int
-	TransactionType
-	Description string
-	CreatedAt   time.Time
+	ID              string          `json:"id"`
+	UserID          int             `json:"user_id"`
+	Amount          int             `json:"amount"`
+	TransactionType TransactionType `json:"transaction_type"`
+	Description     string          `json:"description"`
+	Date            time.Time       `json:"date"`
 }
 
 func NewTransaction(id string, userId, amount int, transactionType TransactionType, description string) *Transaction {
@@ -40,6 +40,6 @@ func NewTransaction(id string, userId, amount int, transactionType TransactionTy
 		Amount:          amount,
 		TransactionType: transactionType,
 		Description:     description,
-		CreatedAt:       time.Now(),
+		Date:            time.Now(),
 	}
 }

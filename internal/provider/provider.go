@@ -1,27 +1,27 @@
 package provider
 
 import (
-	"github.com/ivmello/kakebo-go-api/internal/adapters/database"
 	"github.com/ivmello/kakebo-go-api/internal/config"
 	"github.com/ivmello/kakebo-go-api/internal/core/auth"
 	"github.com/ivmello/kakebo-go-api/internal/core/reports"
 	"github.com/ivmello/kakebo-go-api/internal/core/transactions"
 	"github.com/ivmello/kakebo-go-api/internal/core/users"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Provider struct {
 	cfg  *config.Config
-	conn database.Connection
+	conn *pgxpool.Pool
 }
 
-func New(cfg *config.Config, conn database.Connection) *Provider {
+func New(cfg *config.Config, conn *pgxpool.Pool) *Provider {
 	return &Provider{
 		cfg,
 		conn,
 	}
 }
 
-func (p *Provider) GetDB() database.Connection {
+func (p *Provider) GetDB() *pgxpool.Pool {
 	return p.conn
 }
 

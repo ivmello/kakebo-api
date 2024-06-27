@@ -40,6 +40,28 @@ func (h *handler) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	utils.JSONResponse(w, output, http.StatusOK)
 }
 
+func (h *handler) ImportTransactionsFromFile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userId := ctx.Value(utils.USER_ID_KEY).(int)
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		utils.JSONErrorResponse(w, "Erro ao fazer o parse do form", http.StatusBadRequest)
+		return
+	}
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		utils.JSONErrorResponse(w, "Erro ao obter o arquivo", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+	output, err := h.service.ImportTransactionsFromCSV(ctx, userId, file)
+	if err != nil {
+		utils.JSONErrorResponse(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	utils.JSONResponse(w, output, http.StatusOK)
+}
+
 func (h *handler) ListAllUserTransactions(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userId := ctx.Value(utils.USER_ID_KEY).(int)
